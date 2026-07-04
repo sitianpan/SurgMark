@@ -48,16 +48,6 @@ Original public datasets:
 
 ### Environment
 
-The reference environment used for development and experiments is:
-
-```text
-Python 3.9.21
-PyTorch 2.5.1
-CUDA 12.4
-cuDNN 9.1
-GPU: NVIDIA L40
-```
-
 Create the environment:
 
 ```bash
