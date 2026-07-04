@@ -95,11 +95,11 @@ DATASET=cholec MODEL=checkpoints/cholec_stage1_alignment bash scripts/train_stag
 
 ### Testing
 
-Run the cached observation path to test the Markov tracker, procedural memory graph, and agent interface without model weights.
+Run the cached observation path to test the Markov tracker, procedural memory graph, and agent interface without model weights. Set `CACHED_OBSERVATIONS` to your own JSONL observation file.
 
 ```bash
 bash scripts/build_label_space.sh
-DRY_RUN=1 bash scripts/run_cached_stream_demo.sh
+CACHED_OBSERVATIONS=path/to/observations.jsonl DRY_RUN=1 bash scripts/run_cached_stream_demo.sh
 ```
 
 ### Inference
@@ -134,7 +134,6 @@ data/                     Compact English annotation files prepared for public r
 data/cholec/              CholecT45-derived state-caption and surgical-QA JSONL files.
 data/psiava/              PSI-AVA-derived state-caption and surgical-QA JSONL files.
 data/autolaparo/          AutoLaparo-derived state-caption and surgical-QA JSONL files.
-data/cached_observations.jsonl  Small cached observation example for the lightweight demo path.
 ```
 
 ## Notes
