@@ -5,7 +5,7 @@ export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 
 MODEL="${MODEL:-OpenGVLab/InternVL2-8B}"
 DATASET="${DATASET:-cholec}"
-TRAIN_JSONL="data/open_english/${DATASET}/state_caption_train.jsonl"
+TRAIN_JSONL="data/${DATASET}/state_caption_train.jsonl"
 OUT_DIR="checkpoints/${DATASET}_stage1_alignment"
 
 python -m surgmark.training.train_observer \

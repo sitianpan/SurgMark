@@ -5,7 +5,7 @@ export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 
 DATASET="${DATASET:-cholec}"
 MODEL="${MODEL:-checkpoints/${DATASET}_stage1_alignment}"
-TRAIN_JSONL="data/open_english/${DATASET}/state_caption_train.jsonl"
+TRAIN_JSONL="data/${DATASET}/state_caption_train.jsonl"
 LABEL_SPACE="${LABEL_SPACE:-configs/label_space.json}"
 OUT_DIR="checkpoints/${DATASET}_surgmark_observer"
 

@@ -28,7 +28,7 @@ Key components:
 
 ## Data
 
-This repository contains compact English JSONL annotations under `data/open_english/`. Raw surgical frames, private gastric data, model checkpoints, and API keys are not included.
+This repository contains compact English JSONL annotations under `data/`. Raw surgical frames, private gastric data, model checkpoints, and API keys are not included.
 
 Frame paths in the released JSONL files are relative placeholders, such as:
 
@@ -130,11 +130,11 @@ surgmark/streaming/       Online Markov tracking and streaming inference logic.
 surgmark/agent/           Procedural memory graph, tools, LLM client, prompts, and decision agent.
 scripts/                  Runnable scripts for label preparation, training, testing, and inference.
 configs/                  Relative-path configuration templates for datasets, training, streaming, and agents.
-data/open_english/        Compact English annotation files prepared for public release.
-data/open_english/cholec/ CholecT45-derived state-caption and surgical-QA JSONL files.
-data/open_english/psiava/ PSI-AVA-derived state-caption and surgical-QA JSONL files.
-data/open_english/autolaparo/ AutoLaparo-derived state-caption and surgical-QA JSONL files.
-examples/                 Small cached observation examples for running the lightweight demo path.
+data/                     Compact English annotation files prepared for public release.
+data/cholec/              CholecT45-derived state-caption and surgical-QA JSONL files.
+data/psiava/              PSI-AVA-derived state-caption and surgical-QA JSONL files.
+data/autolaparo/          AutoLaparo-derived state-caption and surgical-QA JSONL files.
+data/cached_observations.jsonl  Small cached observation example for the lightweight demo path.
 ```
 
 ## Notes

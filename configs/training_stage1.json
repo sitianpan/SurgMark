@@ -1,6 +1,6 @@
 {
   "base_model": "OpenGVLab/InternVL2-8B",
-  "train_jsonl": "data/open_english/cholec/state_caption_train.jsonl",
+  "train_jsonl": "data/cholec/state_caption_train.jsonl",
   "output_dir": "checkpoints/stage1_alignment",
   "epochs": 1,
   "learning_rate": 2e-5,
