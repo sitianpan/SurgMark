@@ -1,6 +1,4 @@
-# SurgMark
-
-**An Agentic Hierarchical Markov State-Space Framework for Streaming Surgical Video Understanding**
+# SurgMark: An Agentic Hierarchical Markov State-Space Framework for Streaming Surgical Video Understanding
 
 ## Demo
 
