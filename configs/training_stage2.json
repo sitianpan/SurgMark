@@ -1,0 +1,13 @@
+{
+  "base_model": "checkpoints/stage1_alignment",
+  "train_jsonl": "data/open_english/cholec/state_caption_train.jsonl",
+  "label_space": "configs/label_space.json",
+  "output_dir": "checkpoints/surgmark",
+  "epochs": 1,
+  "learning_rate": 1e-5,
+  "batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "hierarchy_loss_weight": 0.4,
+  "boundary_loss_weight": 0.2,
+  "bf16": true
+}

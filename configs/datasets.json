@@ -1,0 +1,26 @@
+{
+  "datasets": {
+    "cholec": {
+      "root": "data/open_english/cholec",
+      "state_train": "state_caption_train.jsonl",
+      "state_test": "state_caption_test.jsonl",
+      "qa_train": "surgical_qa_train.jsonl",
+      "qa_test": "surgical_qa_test.jsonl"
+    },
+    "psiava": {
+      "root": "data/open_english/psiava",
+      "state_train": "state_caption_train.jsonl",
+      "state_test": "state_caption_test.jsonl",
+      "qa_train": "surgical_qa_train.jsonl",
+      "qa_test": "surgical_qa_test.jsonl"
+    },
+    "autolaparo": {
+      "root": "data/open_english/autolaparo",
+      "state_train": "state_caption_train.jsonl",
+      "state_test": "state_caption_test.jsonl",
+      "qa_train": "surgical_qa_train.jsonl",
+      "qa_test": "surgical_qa_test.jsonl"
+    }
+  },
+  "frames_root": "data/frames"
+}

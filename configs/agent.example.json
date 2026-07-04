@@ -1,0 +1,25 @@
+{
+  "llm": {
+    "base_url": "",
+    "model": "gpt-5",
+    "api_key_env": "OPENAI_API_KEY",
+    "temperature": 0.0,
+    "max_tokens": 1024
+  },
+  "agent": {
+    "enabled": true,
+    "override_threshold": 0.8,
+    "minimum_switch_gap_sec": 30,
+    "use_visual_review": false,
+    "allowed_tools": [
+      "hold_state",
+      "transition_state",
+      "revise_state",
+      "mark_uncertainty",
+      "mark_deviation",
+      "write_graph",
+      "answer_question",
+      "inspect_frame"
+    ]
+  }
+}

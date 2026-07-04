@@ -1,0 +1,10 @@
+{
+  "base_model": "OpenGVLab/InternVL2-8B",
+  "train_jsonl": "data/open_english/cholec/state_caption_train.jsonl",
+  "output_dir": "checkpoints/stage1_alignment",
+  "epochs": 1,
+  "learning_rate": 2e-5,
+  "batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "bf16": true
+}

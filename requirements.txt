@@ -1,0 +1,10 @@
+torch>=2.1
+transformers>=4.40
+accelerate
+deepspeed
+peft
+pillow
+numpy
+pandas
+tqdm
+openai

@@ -1,0 +1,13 @@
+{
+  "model_path": "checkpoints/surgmark",
+  "label_space": "configs/label_space.json",
+  "frames_root": "data/frames",
+  "input_size": 448,
+  "window_size": 4,
+  "stride": 1,
+  "top_k": 5,
+  "boundary_threshold": 0.85,
+  "score_margin": 0.08,
+  "minimum_switch_gap_sec": 30,
+  "output_dir": "outputs/stream_run"
+}
