@@ -81,24 +81,26 @@ bash scripts/build_label_space.sh
 Stage 1: frame-level semantic alignment.
 
 ```bash
-DATASET=cholec MODEL=OpenGVLab/InternVL2-8B bash scripts/train_stage1_alignment.sh
+bash scripts/train_stage1_alignment.sh
 ```
 
 Stage 2: clip-level state-aware training with hierarchical state and boundary heads.
 
 ```bash
-DATASET=cholec MODEL=checkpoints/cholec_stage1_alignment bash scripts/train_stage2_state_observer.sh
+bash scripts/train_stage2_state_observer.sh
 ```
 
 ### Testing
 
-Run streaming inference on a prepared frame directory to inspect the online trace and procedural graph outputs.
+Build the hierarchical label space:
 
 ```bash
 bash scripts/build_label_space.sh
-MODEL_PATH=checkpoints/cholec_surgmark_observer \
-FRAMES_DIR=data/frames/cholec/VID01 \
-OUTPUT_DIR=outputs/cholec_vid01_stream \
+```
+
+Run streaming inference on the default prepared frame directory to inspect the online trace and procedural graph outputs:
+
+```bash
 bash scripts/run_streaming_inference.sh
 ```
 
@@ -107,14 +109,14 @@ bash scripts/run_streaming_inference.sh
 Streaming inference without the LLM agent:
 
 ```bash
-FRAMES_DIR=data/frames/cholec/VID01 bash scripts/run_streaming_inference.sh
+bash scripts/run_streaming_inference.sh
 ```
 
-Streaming inference with the decision agent:
+Set your API key before running streaming inference with the decision agent:
 
 ```bash
 export OPENAI_API_KEY=your_key_here
-FRAMES_DIR=data/frames/cholec/VID01 bash scripts/run_agent_streaming.sh
+bash scripts/run_agent_streaming.sh
 ```
 
 The LLM configuration template is available at `configs/agent.example.json`. Do not commit real API keys.
