@@ -1,20 +1,113 @@
-# SurgMark: An Agentic Hierarchical Markov State-Space Framework for Streaming Surgical Video Understanding
+# SurgMark
 
-![SurgMark overview](assets/images/surgmark_overview.png)
-
-SurgMark is a compact reference implementation for streaming surgical video understanding. It models surgery as a hierarchical Markov state-space process and combines a VLM-based surgical state observer, online Markov belief tracking, a dynamic procedural memory graph, and an LLM decision agent with explicit tools.
-
-The framework is designed for causal intraoperative video streams: it predicts multi-level surgical states, tracks state transitions, maintains queryable procedure memory, flags potential workflow deviations, and routes context-aware surgical QA through graph, observation, SOP prior, or visual evidence.
-
-This repository does not include model weights, private gastric data, raw surgical frames, or API keys.
+**An Agentic Hierarchical Markov State-Space Framework for Streaming Surgical Video Understanding**
 
 ## Demo
 
-<video src="assets/videos/demo.mp4" controls width="100%"></video>
+The following demo uses a cholecystectomy video as an example to show how SurgMark performs real-time surgical state understanding, procedural graph construction, and interactive surgical QA.
 
-If the video preview is not rendered by GitHub, open it directly: [assets/videos/demo.mp4](assets/videos/demo.mp4).
+<video controls preload="metadata" width="100%">
+  <source src="assets/videos/demo.mp4" type="video/mp4">
+  Your browser does not support embedded video playback.
+</video>
 
-## Structure
+If the embedded player is not rendered by GitHub, open the demo video directly: [assets/videos/demo.mp4](assets/videos/demo.mp4).
+
+## Main Idea
+
+SurgMark is a reference implementation for streaming surgical video understanding. It models surgery as a hierarchical Markov state-space process and combines a VLM-based surgical state observer, online Markov belief tracking, a dynamic procedural memory graph, and an LLM decision agent with explicit tool actions.
+
+The framework is designed for causal intraoperative video streams. At each time step, SurgMark observes the current video window, predicts hierarchical surgical states, updates the Markov belief, commits reliable states into a procedural memory graph, and routes surgical questions to the appropriate evidence source.
+
+## Innovations
+
+- **Hierarchical surgical state observer:** predicts multi-level surgical states and captions from streaming video windows.
+- **Markov state-space tracking:** constrains noisy observations using procedure-aware transition priors and temporal guards.
+- **Dynamic procedural memory graph:** stores completed states, state transitions, uncertainty, deviation notes, and graph-level procedural context.
+- **Agentic decision module:** uses structured tools to hold, transition, revise, mark uncertainty/deviation, update the graph, and route QA evidence.
+- **Streaming surgical QA:** answers questions about completed steps, the current operation, and expected next actions using observation, memory graph, SOP prior, or state belief.
+
+## Overview
+
+![SurgMark overview](assets/images/surgmark_overview.png)
+
+## Data
+
+This repository contains compact English JSONL annotations under `data/open_english/`. Raw surgical frames, private gastric data, model checkpoints, and API keys are not included.
+
+Frame paths in the released JSONL files are relative placeholders, such as:
+
+```text
+frames/cholec/VID01/000000.png
+```
+
+Download the original public frames separately and place or symlink them under `data/frames/`.
+
+Original public datasets:
+
+- CholecT45: https://github.com/CAMMA-public/cholect45
+- PSI-AVA / TAPIR: https://github.com/BCV-Uniandes/TAPIR
+- AutoLaparo: https://github.com/ziyiwangx/AutoLaparo and https://autolaparo.github.io/
+
+## Usage
+
+### Environment
+
+```bash
+conda create -n surgmark python=3.10 -y
+conda activate surgmark
+pip install -r requirements.txt
+```
+
+For full VLM training, install the dependencies required by your Intern-compatible base model. The included model wrapper uses `trust_remote_code=True`.
+
+### Prepare Labels
+
+```bash
+bash scripts/build_label_space.sh
+```
+
+### Training
+
+Stage 1: frame-level semantic alignment.
+
+```bash
+DATASET=cholec MODEL=OpenGVLab/InternVL2-8B bash scripts/train_stage1_alignment.sh
+```
+
+Stage 2: clip-level state-aware training with hierarchical state and boundary heads.
+
+```bash
+DATASET=cholec MODEL=checkpoints/cholec_stage1_alignment bash scripts/train_stage2_state_observer.sh
+```
+
+### Testing
+
+Run the cached observation path to test the Markov tracker, procedural memory graph, and agent interface without model weights.
+
+```bash
+bash scripts/build_label_space.sh
+DRY_RUN=1 bash scripts/run_cached_stream_demo.sh
+```
+
+### Inference
+
+Streaming inference without the LLM agent:
+
+```bash
+FRAMES_DIR=data/frames/cholec/VID01 bash scripts/run_streaming_inference.sh
+```
+
+Streaming inference with the decision agent:
+
+```bash
+export OPENAI_API_KEY=your_key_here
+FRAMES_DIR=data/frames/cholec/VID01 bash scripts/run_agent_streaming.sh
+```
+
+The LLM configuration template is available at `configs/agent.example.json`. Do not commit real API keys.
+
+## Repository Structure
 
 ```text
 surgmark/
@@ -29,82 +122,16 @@ data/open_english/
   cholec/
   psiava/
   autolaparo/
+assets/
+  images/
+  videos/
 ```
-
-## Environment
-
-```bash
-conda create -n surgmark python=3.10 -y
-conda activate surgmark
-pip install -r requirements.txt
-```
-
-For full VLM training, install the dependencies required by your InternVL/Intern-compatible base model. The included code uses `trust_remote_code=True` for model loading.
-
-## Data
-
-The repository contains only compact English JSONL annotations under `data/open_english/`. Frame paths are relative placeholders such as `frames/cholec/VID01/000000.png`; download the original frames separately and place or symlink them under `data/frames/`.
-
-Original public datasets:
-
-- CholecT45: https://github.com/CAMMA-public/cholect45
-- PSI-AVA / TAPIR: https://github.com/BCV-Uniandes/TAPIR
-- AutoLaparo: https://github.com/ziyiwangx/AutoLaparo and https://autolaparo.github.io/
-
-## Minimal Workflow
-
-Build the hierarchical label space:
-
-```bash
-bash scripts/build_label_space.sh
-```
-
-Stage 1 frame-level semantic alignment:
-
-```bash
-DATASET=cholec MODEL=OpenGVLab/InternVL2-8B bash scripts/train_stage1_alignment.sh
-```
-
-Stage 2 clip-level state-aware training:
-
-```bash
-DATASET=cholec MODEL=checkpoints/cholec_stage1_alignment bash scripts/train_stage2_state_observer.sh
-```
-
-Streaming inference without the LLM agent:
-
-```bash
-FRAMES_DIR=data/frames/cholec/VID01 bash scripts/run_streaming_inference.sh
-```
-
-Streaming inference with the agent:
-
-```bash
-export OPENAI_API_KEY=your_key_here
-FRAMES_DIR=data/frames/cholec/VID01 bash scripts/run_agent_streaming.sh
-```
-
-Run the Markov/agent path without model weights:
-
-```bash
-bash scripts/build_label_space.sh
-DRY_RUN=1 bash scripts/run_cached_stream_demo.sh
-```
-
-## Agent Design
-
-At each streaming step, SurgMark builds:
-
-1. observer evidence: caption, atom top-k, hierarchy logits, boundary probability;
-2. Markov belief: SOP-like transition prior with duration and boundary guards;
-3. procedural memory graph: accepted nodes, uncertainty, and deviation ledger;
-4. tool action plan: hold, transition, revise, mark uncertainty/deviation, write graph, route QA, or inspect frame.
-
-The LLM configuration template is `configs/agent.example.json`. Do not commit real API keys.
 
 ## Notes
 
-The scripts are intentionally concise and use relative paths. They are meant to expose the method components cleanly; large-scale training may require adapting batch size, distributed launch, and the exact Intern-compatible model wrapper to your environment.
+The scripts are intentionally concise and use relative paths. They are meant to expose the core method components clearly; large-scale training may require adapting batch size, distributed launch, model wrappers, and dataset-specific preprocessing.
+
+This repository does not include model weights, private data, raw surgical frames, or API credentials.
 
 ## Contact
 
