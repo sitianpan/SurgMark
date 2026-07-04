@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 
 python -m surgmark.streaming.stream_infer \
-  --video-id "${VIDEO_ID:-demo}" \
+  --video-id "${VIDEO_ID:-case001}" \
   --model-path "${MODEL_PATH:-checkpoints/cholec_surgmark_observer}" \
   --label-space "${LABEL_SPACE:-configs/label_space.json}" \
   --frames-dir "${FRAMES_DIR:-data/frames/cholec/VID01}" \

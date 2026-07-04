@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 
 ARGS=(
-  --video-id "${VIDEO_ID:-demo}" \
+  --video-id "${VIDEO_ID:-case001}" \
   --model-path "${MODEL_PATH:-checkpoints/cholec_surgmark_observer}" \
   --label-space "${LABEL_SPACE:-configs/label_space.json}" \
   --frames-dir "${FRAMES_DIR:-data/frames/cholec/VID01}" \
@@ -17,8 +17,5 @@ ARGS=(
   --score-margin "${SCORE_MARGIN:-0.08}" \
   --minimum-switch-gap-sec "${MIN_SWITCH_GAP:-30}"
 )
-if [[ "${DRY_RUN:-}" == "1" ]]; then
-  ARGS+=(--dry-run)
-fi
 
 python -m surgmark.streaming.stream_infer "${ARGS[@]}"

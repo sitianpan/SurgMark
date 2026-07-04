@@ -1,7 +1,7 @@
 import argparse
 import json
 from pathlib import Path
-from typing import Dict, Iterable, List
+from typing import Iterable, List
 
 from surgmark.agent.decision_agent import SurgMarkAgent
 from surgmark.agent.memory import ProceduralMemory
@@ -9,20 +9,11 @@ from surgmark.model.observer import SurgMarkObserver
 from surgmark.streaming.markov_tracker import MarkovStateTracker
 
 
-def read_jsonl(path: Path) -> List[Dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
-
-
-def write_jsonl(path: Path, rows: Iterable[Dict]) -> None:
+def write_jsonl(path: Path, rows: Iterable[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
-
-
-def cached_observations(path: Path):
-    for row in read_jsonl(path):
-        yield row
 
 
 def frame_windows(frames: List[str], window_size: int, stride: int):
@@ -37,20 +28,20 @@ def run(args):
     memory = ProceduralMemory(video_id=args.video_id)
     agent_cfg = json.loads(Path(args.agent_config).read_text(encoding="utf-8")) if args.agent_config else {"llm": {}, "agent": {"enabled": False}}
     agent_enabled = bool(agent_cfg.get("agent", {}).get("enabled", False))
-    agent = SurgMarkAgent(agent_cfg, memory, label_space, dry_run=args.dry_run) if agent_enabled else None
+    agent = SurgMarkAgent(agent_cfg, memory, label_space) if agent_enabled else None
 
-    if args.cached_observations:
-        observations = cached_observations(Path(args.cached_observations))
-    else:
-        model = SurgMarkObserver.from_pretrained(args.model_path, args.label_space)
-        frames = sorted(str(p) for p in Path(args.frames_dir).glob("*"))
-        observations = (
-            {
-                "time_sec": i * args.seconds_per_step,
-                **model.observe_window(window, "Identify the current surgical state and provide a brief description.", top_k=args.top_k)["state"],
-            }
-            for i, window in frame_windows(frames, args.window_size, args.stride)
-        )
+    frames_dir = Path(args.frames_dir)
+    frames = sorted(str(p) for p in frames_dir.glob("*"))
+    if not frames:
+        raise FileNotFoundError(f"No input frames found under {frames_dir}")
+    model = SurgMarkObserver.from_pretrained(args.model_path, args.label_space)
+    observations = (
+        {
+            "time_sec": i * args.seconds_per_step,
+            **model.observe_window(window, "Identify the current surgical state and provide a brief description.", top_k=args.top_k)["state"],
+        }
+        for i, window in frame_windows(frames, args.window_size, args.stride)
+    )
 
     out_rows = []
     for step, observation in enumerate(observations):
@@ -78,11 +69,10 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--video-id", default="demo")
+    parser.add_argument("--video-id", default="case001")
     parser.add_argument("--model-path", default="checkpoints/surgmark")
     parser.add_argument("--label-space", default="configs/label_space.json")
     parser.add_argument("--frames-dir", default="")
-    parser.add_argument("--cached-observations", default="")
     parser.add_argument("--agent-config", default="")
     parser.add_argument("--output-dir", default="outputs/stream_run")
     parser.add_argument("--window-size", type=int, default=4)
@@ -92,7 +82,6 @@ def main():
     parser.add_argument("--boundary-threshold", type=float, default=0.85)
     parser.add_argument("--score-margin", type=float, default=0.08)
     parser.add_argument("--minimum-switch-gap-sec", type=float, default=30.0)
-    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     run(args)
 

@@ -1,5 +1,4 @@
 # SurgMark: An Agentic Hierarchical Markov State-Space Framework for Streaming Surgical Video Understanding
-
 ## Demo
 
 📽️ **Demonstration Video**: The demo uses a cholecystectomy video as an example to show SurgMark in action, including streaming state recognition, real-time captioning, procedural memory graph construction, and interactive surgical QA.
@@ -67,8 +66,6 @@ deepspeed==0.14.4
 peft==0.10.0
 datasets==3.3.2
 openai==2.38.0
-fastapi==0.128.2
-uvicorn==0.39.0
 ```
 
 For full VLM training, install the dependencies required by your Intern-compatible base model. FlashAttention is optional and may require a wheel matching your CUDA, PyTorch, Python, and ABI versions.
@@ -95,11 +92,14 @@ DATASET=cholec MODEL=checkpoints/cholec_stage1_alignment bash scripts/train_stag
 
 ### Testing
 
-Run the cached observation path to test the Markov tracker, procedural memory graph, and agent interface without model weights. Set `CACHED_OBSERVATIONS` to your own JSONL observation file.
+Run streaming inference on a prepared frame directory to inspect the online trace and procedural graph outputs.
 
 ```bash
 bash scripts/build_label_space.sh
-CACHED_OBSERVATIONS=path/to/observations.jsonl DRY_RUN=1 bash scripts/run_cached_stream_demo.sh
+MODEL_PATH=checkpoints/cholec_surgmark_observer \
+FRAMES_DIR=data/frames/cholec/VID01 \
+OUTPUT_DIR=outputs/cholec_vid01_stream \
+bash scripts/run_streaming_inference.sh
 ```
 
 ### Inference
