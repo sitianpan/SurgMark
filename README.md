@@ -1,7 +1,7 @@
-# SurgMark: An Agentic Hierarchical Markov State-Space Framework for Streaming Surgical Video Understanding
+# SurgMark: Hierarchical State Tracking With Persistent Evidence Memory for Full-Length Surgical Videos
 ## Demo
 
-📽️ **Demonstration Video**: The demo uses a cholecystectomy video as an example to show SurgMark in action, including streaming state recognition, real-time captioning, procedural memory graph construction, and interactive surgical QA.
+📽️ **Demonstration Video**: The demo uses a cholecystectomy video to show causal state tracking, procedural evidence-memory construction, and anytime surgical question answering.
 
 https://github.com/user-attachments/assets/d3f12aaf-8a6a-4cab-8e85-e3dbe8e4fa4f
 
@@ -11,17 +11,17 @@ If the video is not rendered inline by GitHub, open the repository copy directly
 
 ## Overview
 
-SurgMark is a reference implementation for streaming surgical video understanding. It models surgery as a hierarchical Markov state-space process and combines a VLM-based surgical state observer, online Markov belief tracking, a dynamic procedural memory graph, and an LLM decision agent with explicit tool actions.
+SurgMark is a framework for hierarchical surgical state tracking with persistent evidence memory in full-length surgical videos. It organizes procedural states and priors within a procedure-specific hierarchical state space, extracts local visual evidence through a hierarchical state observer, and maintains temporally coherent state trajectories through Markov-guided belief tracking. Confirmed actions and their temporal and visual evidence are stored in a dynamic structured reasoning graph.
 
-The framework is designed for causal intraoperative video streams. At each time step, SurgMark observes the current video window, predicts hierarchical surgical states, updates the Markov belief, commits reliable states into a procedural memory graph, and routes surgical questions to the appropriate evidence source.
+The framework processes intraoperative video causally from the beginning of a procedure. A constrained agent performs event-triggered state arbitration, memory revision, evidence retrieval, and procedure-aware tool invocation when additional reasoning is required. This supports continuous procedural tracking, historical evidence retrieval, and anytime question answering for simulated full-procedure intraoperative assistance.
 
 Key components:
 
-- **Hierarchical surgical state observer:** predicts multi-level surgical states and captions from streaming video windows.
-- **Markov state-space tracking:** constrains noisy observations using procedure-aware transition priors and temporal guards.
-- **Dynamic procedural memory graph:** stores completed states, state transitions, uncertainty, deviation notes, and graph-level procedural context.
-- **Agentic decision module:** uses structured tools to hold, transition, revise, mark uncertainty/deviation, update the graph, and route QA evidence.
-- **Streaming surgical QA:** answers questions about completed steps, the current operation, and expected next actions using observation, memory graph, SOP prior, or state belief.
+- **Hierarchical surgical state space:** represents procedure-specific states and transition and duration priors at multiple levels.
+- **Hierarchical surgical state observer:** produces global and hierarchical state likelihoods, boundary evidence, and semantic descriptions from causal video windows.
+- **Markov-guided belief tracking:** integrates visual evidence, procedural priors, boundary support, duration compatibility, and hierarchical consistency.
+- **Persistent evidence memory:** stores confirmed events with completion status, timestamps, source frames, and multimodal evidence in a dynamic structured reasoning graph.
+- **Constrained agent:** coordinates triggered state arbitration, graph-memory revision, evidence retrieval, and anytime question answering.
 
 ![SurgMark overview](assets/images/surgmark_overview.png)
 
