@@ -6,7 +6,7 @@ export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 DATASET="${DATASET:-cholec}"
 MODEL="${MODEL:-checkpoints/${DATASET}_stage1_alignment}"
 TRAIN_JSONL="data/${DATASET}/state_caption_train.jsonl"
-LABEL_SPACE="${LABEL_SPACE:-configs/label_space.json}"
+LABEL_SPACE="${LABEL_SPACE:-configs/${DATASET}_label_space.json}"
 OUT_DIR="checkpoints/${DATASET}_surgmark_observer"
 
 test -f "${LABEL_SPACE}" || bash scripts/build_label_space.sh

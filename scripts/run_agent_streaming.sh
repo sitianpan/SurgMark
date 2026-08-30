@@ -6,16 +6,23 @@ export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 ARGS=(
   --video-id "${VIDEO_ID:-case001}" \
   --model-path "${MODEL_PATH:-checkpoints/cholec_surgmark_observer}" \
-  --label-space "${LABEL_SPACE:-configs/label_space.json}" \
+  --label-space "${LABEL_SPACE:-configs/cholec_label_space.json}" \
   --frames-dir "${FRAMES_DIR:-data/frames/cholec/VID01}" \
   --agent-config "${AGENT_CONFIG:-configs/agent.example.json}" \
   --output-dir "${OUTPUT_DIR:-outputs/stream_agent}" \
   --window-size "${WINDOW_SIZE:-4}" \
   --stride "${STRIDE:-1}" \
-  --top-k "${TOP_K:-5}" \
+  --top-k "${TOP_K:-8}" \
   --boundary-threshold "${BOUNDARY_TH:-0.85}" \
   --score-margin "${SCORE_MARGIN:-0.08}" \
-  --minimum-switch-gap-sec "${MIN_SWITCH_GAP:-30}"
+  --minimum-switch-gap-sec "${MIN_SWITCH_GAP:-30}" \
+  --visual-weight "${VISUAL_WEIGHT:-1.35}" \
+  --transition-weight "${TRANSITION_WEIGHT:-0.75}" \
+  --boundary-weight "${BOUNDARY_WEIGHT:-0.55}" \
+  --duration-weight "${DURATION_WEIGHT:-0.35}" \
+  --hierarchy-weight "${HIERARCHY_WEIGHT:-0.50}" \
+  --procedural-prior-weight "${PROCEDURAL_PRIOR_WEIGHT:-1.0}" \
+  --epsilon "${EPSILON:-1e-6}"
 )
 
 python -m surgmark.streaming.stream_infer "${ARGS[@]}"

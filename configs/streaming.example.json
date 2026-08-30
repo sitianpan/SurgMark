@@ -1,13 +1,22 @@
 {
   "model_path": "checkpoints/surgmark",
-  "label_space": "configs/label_space.json",
+  "label_space": "configs/cholec_label_space.json",
   "frames_root": "data/frames",
   "input_size": 448,
   "window_size": 4,
   "stride": 1,
-  "top_k": 5,
+  "top_k": 8,
   "boundary_threshold": 0.85,
   "score_margin": 0.08,
   "minimum_switch_gap_sec": 30,
+  "score_weights": {
+    "visual": 1.35,
+    "transition": 0.75,
+    "boundary": 0.55,
+    "duration": 0.35,
+    "hierarchy": 0.50
+  },
+  "procedural_prior_weight": 1.0,
+  "epsilon": 1e-6,
   "output_dir": "outputs/stream_run"
 }

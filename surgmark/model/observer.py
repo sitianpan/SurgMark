@@ -37,18 +37,44 @@ class SurgMarkObserver(nn.Module):
 
     def state_from_logits(self, logits: Dict[str, torch.Tensor], top_k: int = 5) -> Dict:
         pred = {}
-        for level in ("phase", "cluster", "step", "atom"):
-            probs = logits[level].softmax(dim=-1)[0]
+        levels = ("phase", "cluster", "step", "atom")
+        parent_levels = {"cluster": "phase", "step": "cluster", "atom": "step"}
+        parent_maps = {
+            "cluster": self.label_space.get("parents", {}).get("cluster_to_phase", {}),
+            "step": self.label_space.get("parents", {}).get("step_to_cluster", {}),
+            "atom": self.label_space.get("parents", {}).get("atom_to_step", {}),
+        }
+        global_probs = {level: logits[level].softmax(dim=-1)[0] for level in levels}
+        hierarchy_probs = {}
+        for level in levels:
             values = self.label_space["levels"].get(level, [])
+            probs = global_probs[level]
+            parent_level = parent_levels.get(level)
+            if parent_level:
+                parent = pred.get(parent_level, "")
+                valid = torch.tensor(
+                    [parent_maps[level].get(value) == parent for value in values],
+                    device=probs.device,
+                    dtype=torch.bool,
+                )
+                if bool(valid.any()):
+                    masked_logits = logits[level][0].masked_fill(~valid, torch.finfo(logits[level].dtype).min)
+                    probs = masked_logits.softmax(dim=-1)
             idx = int(probs.argmax())
             pred[level] = values[idx] if idx < len(values) else ""
-            if level == "atom":
-                k = min(top_k, len(values))
-                top = torch.topk(probs, k=k)
-                pred["atom_topk"] = [
-                    {"atom": values[int(i)], "prob": float(p)}
-                    for p, i in zip(top.values, top.indices)
-                ]
+            hierarchy_probs[level] = {value: float(probs[i]) for i, value in enumerate(values)}
+
+        atom_values = self.label_space["levels"].get("atom", [])
+        atom_probs = global_probs["atom"]
+        k = min(top_k, len(atom_values))
+        top = torch.topk(atom_probs, k=k)
+        pred["atom_topk"] = [
+            {"atom": atom_values[int(i)], "prob": float(p)}
+            for p, i in zip(top.values, top.indices)
+        ]
+        pred["global_atom_probs"] = {value: float(atom_probs[i]) for i, value in enumerate(atom_values)}
+        pred["hierarchy_probs"] = hierarchy_probs
+        pred["confidence"] = float(atom_probs[atom_values.index(pred["atom"])]) if pred.get("atom") in atom_values else 0.0
         pred["boundary_prob"] = float(torch.sigmoid(logits["boundary"])[0])
         pred["node_name"] = self.label_space.get("node_names", {}).get(pred.get("atom", ""), pred.get("atom", ""))
         return pred

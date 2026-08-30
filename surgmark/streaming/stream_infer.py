@@ -24,7 +24,21 @@ def frame_windows(frames: List[str], window_size: int, stride: int):
 
 def run(args):
     label_space = json.loads(Path(args.label_space).read_text(encoding="utf-8"))
-    tracker = MarkovStateTracker(label_space, args.boundary_threshold, args.score_margin, args.minimum_switch_gap_sec)
+    tracker = MarkovStateTracker(
+        label_space,
+        args.boundary_threshold,
+        args.score_margin,
+        args.minimum_switch_gap_sec,
+        score_weights={
+            "visual": args.visual_weight,
+            "transition": args.transition_weight,
+            "boundary": args.boundary_weight,
+            "duration": args.duration_weight,
+            "hierarchy": args.hierarchy_weight,
+        },
+        procedural_prior_weight=args.procedural_prior_weight,
+        epsilon=args.epsilon,
+    )
     memory = ProceduralMemory(video_id=args.video_id)
     agent_cfg = json.loads(Path(args.agent_config).read_text(encoding="utf-8")) if args.agent_config else {"llm": {}, "agent": {"enabled": False}}
     agent_enabled = bool(agent_cfg.get("agent", {}).get("enabled", False))
@@ -77,11 +91,18 @@ def main():
     parser.add_argument("--output-dir", default="outputs/stream_run")
     parser.add_argument("--window-size", type=int, default=4)
     parser.add_argument("--stride", type=int, default=1)
-    parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument("--top-k", type=int, default=8)
     parser.add_argument("--seconds-per-step", type=float, default=5.0)
     parser.add_argument("--boundary-threshold", type=float, default=0.85)
     parser.add_argument("--score-margin", type=float, default=0.08)
     parser.add_argument("--minimum-switch-gap-sec", type=float, default=30.0)
+    parser.add_argument("--visual-weight", type=float, default=1.35)
+    parser.add_argument("--transition-weight", type=float, default=0.75)
+    parser.add_argument("--boundary-weight", type=float, default=0.55)
+    parser.add_argument("--duration-weight", type=float, default=0.35)
+    parser.add_argument("--hierarchy-weight", type=float, default=0.50)
+    parser.add_argument("--procedural-prior-weight", type=float, default=1.0)
+    parser.add_argument("--epsilon", type=float, default=1e-6)
     args = parser.parse_args()
     run(args)
 
